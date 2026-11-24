@@ -1,0 +1,109 @@
+#include <string>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <deque>
+#include <iterator>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+
+class car {
+	public:
+    string name;
+	vector <float> fuel;
+	int max_speed;
+	int power;
+
+	
+	car(string name, vector<float> fuel, int max_speed, int power) { //конструктор
+		this->name = name;
+		this->fuel = fuel;
+		this->max_speed = max_speed;
+		this->power = power;
+
+		if (fuel.size() != 3) {
+			throw invalid_argument("Fuel vector must have exactly 3 elements.");
+		}
+	}
+
+	friend ostream& operator << (std::ostream& os, const car& c);
+};
+
+//оператор <<
+ostream& operator << (std::ostream& os, const car& c) {
+	os << "Имя тачки: " << c.name << "\n";
+	os << "Расход на разных трассах: ";
+	for (const auto& f : c.fuel) {
+		os << f << " ";
+	}
+	os << "\nМаксимальная скорость: " << c.max_speed << "\n";
+	os << "Мощность: " << c.power << "\n";
+	return os;
+}
+
+bool cmp(const car& a, const car& b) {
+	return a.fuel[2] < b.fuel[2];
+}
+
+int main()
+{	
+
+	setlocale(LC_ALL, "Russian");
+	vector <car> cars; //создаем контейнер
+	string line;
+	string name;
+	ifstream fin;
+	string f1, f2, f3, max_speed_str, power_str;
+
+	fin.open("input.txt");
+	while (getline(fin, line)) {
+		if (line.empty()) continue;
+		stringstream ss(line);
+		getline(ss, name, ',');
+		getline(ss, f1, ',');
+		getline(ss, f2, ',');
+		getline(ss, f3, ',');
+		getline(ss, max_speed_str, ',');
+		getline(ss, power_str, ',');
+
+		float fuel1 = stof(f1);
+		float fuel2 = stof(f2);
+		float fuel3 = stof(f3);
+		int max_speed = stoi(max_speed_str);
+		int power = stoi(power_str);
+
+		car c(name, { fuel1, fuel2, fuel3 }, max_speed, power);
+		cars.push_back(c);
+	}
+
+
+	ofstream fout;
+	fout.open("output.txt");
+
+	fout << "Исходный контейнер(vector): " << endl;
+	for (const auto& c : cars) { //выводим vector
+		fout << c << endl;
+	}
+
+	deque <car> cars_deque; //создаем контейнер
+	copy(cars.begin(), cars.end(), back_inserter(cars_deque));
+
+
+	sort(cars.begin(), cars.end(), cmp);
+
+	fout << "Отсортированный контейнер(vector): " << endl;
+	for (const auto& c : cars) { //выводим отсортированный vector
+		fout << c << endl;
+	}
+
+	fout << "Контейнер(deque), без сортировки: " << endl;
+	for (const auto& c : cars_deque) { //выводим контейнер (не отсортированный)
+		fout << c << endl;
+	}
+
+	fout.close();
+}
+
