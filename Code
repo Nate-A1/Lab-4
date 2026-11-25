@@ -25,7 +25,7 @@ class car {
 		this->power = power;
 
 		if (fuel.size() != 3) {
-			throw invalid_argument("Fuel vector must have exactly 3 elements.");
+			throw invalid_argument("Массив топлива должен иметь 3 элемента");
 		}
 	}
 
